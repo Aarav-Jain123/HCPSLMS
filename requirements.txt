@@ -1,0 +1,4 @@
+django
+django-autoslug
+django-autoslug
+crispy-bootstrap5

@@ -1,0 +1,12 @@
+{% extends 'main/base.html' %} {% block title %}Add issue{% endblock %} 
+{% load crispy_forms_tags %} {% block content %}
+<div class="container" id="content">
+  <div class="text-center">
+    <h1>Issue form</h1>
+  </div>
+<form method="post" enctype="multipart/form-data" id='form'>
+  {% csrf_token %}{{form|crispy}}
+  <button type="submit" class="btn btn-success" id='submit-btn'>Proceed</button>
+</form>
+</div>
+{% endblock %}

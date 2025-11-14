@@ -18,7 +18,6 @@ class Author(models.Model):
 class Publication(models.Model):
     publication_name = models.CharField(max_length=256)
     publication_link = models.URLField()
-    author = models.ManyToManyField("Author", related_name="publications")
 
     class Meta:
         ordering = ["publication_name"]

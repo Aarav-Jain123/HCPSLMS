@@ -1,9 +1,19 @@
 {% extends './base.html' %} {% block title %}View Content{% endblock %}
 {% block content %}
 <div class="container">
-    <div>
-        <a href="/add-issue/" class="btn btn-primary">
-            Add issue
+    <div class='my-3'>
+        <a href="/add-book/" class="btn btn-primary">
+            Add book
+        </a>
+    </div>
+    <div class='my-3'>
+        <a href="/add-author/" class="btn btn-primary">
+            Add Author
+        </a>
+    </div>
+        <div class='my-3'>
+        <a href="/add-publication/" class="btn btn-primary">
+            Add Publication
         </a>
     </div>
     <section>
@@ -36,7 +46,7 @@
             </div>
         </div>
         {% empty %}
-        <p>No issued Content to collect today</p>
+        <p>No issued book to collect today, add <a href='/add-book/'>Book</a> <a href='/add-publication/'>Publication</a> <a href='/add-author/'>Author</a></p>
         {% endfor %}
     </section>
 </div>

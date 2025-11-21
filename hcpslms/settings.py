@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "autoslug",
     "crispy_bootstrap5",
     "crispy_forms",
+    
 ]
 
 

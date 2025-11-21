@@ -2,11 +2,40 @@ from django.db import models
 from autoslug import AutoSlugField
 from datetime import date, timedelta
 from django.core.validators import MaxValueValidator
+from django.contrib.auth.models import User
 
 
+class Students(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    
+    admission_no = models.IntegerField()
+    
+    student_name = models.CharField(max_length=64)
+    student_mother_name = models.CharField(max_length=64)
+    student_father_name = models.CharField(max_length=64)
+    
+    student_image = models.ImageField()
+    student_father_image = models.ImageField()
+    student_mother_image = models.ImageField()
+    
+    student_address = models.TextField(blank=True, null=True)
+    
+    student_grade = models.IntegerField()
+    student_section = models.CharField(max_length=1)
+    
+    student_phone_number_father = models.IntegerField()
+    student_phone_number_mother = models.IntegerField()
+    student_mode_of_transfer = models.CharField(max_length=8)
+    
+    def __str__(self):
+        student = ", ".join(a.student_name for a in self.student_name.all())
+        class_of_student = ", ".join(p.publication_name for p in self.student_grade.all())
+        section_of_student = "".join(s.student_section for s in self.student_section.all())
+        return f"{student} of {class_of_student}{section_of_student}"    
+    
 class Author(models.Model):
     author_name = models.CharField(max_length=256)
-    author_link = models.URLField()
+    author_link = models.CharField(max_length=1024, unique=True)
 
     class Meta:
         ordering = ["author_name"]
@@ -16,8 +45,8 @@ class Author(models.Model):
 
 
 class Publication(models.Model):
-    publication_name = models.CharField(max_length=256)
-    publication_link = models.URLField()
+    publication_name = models.CharField(max_length=256, unique=True)
+    publication_link = models.CharField(max_length=1024)
 
     class Meta:
         ordering = ["publication_name"]
@@ -30,7 +59,7 @@ class Books(models.Model):
     book_code = models.CharField(max_length=256, unique=True)
     book_name = models.CharField(max_length=256)
     book_author = models.ManyToManyField("Author", related_name='books')
-    book_link = models.URLField()
+    book_link = models.CharField(max_length=1024)
     book_publication = models.ManyToManyField("Publication", related_name='books')
 
     class Meta:
@@ -44,27 +73,42 @@ class Books(models.Model):
 
 class IssueBook(models.Model):
     book = models.ForeignKey(Books, on_delete=models.PROTECT)
-    admission_no = models.IntegerField(validators=[MaxValueValidator(999999)])
-    issue_date = models.DateField(auto_now_add=True)
+    issue_holder = models.ManyToManyField("Students", related_name='issuebook')
+    returned = models.BooleanField(default=False)
+    issue_date = models.DateField(null=True, blank=True)
     return_date = models.DateField(null=True, blank=True)
-    is_returned = models.BooleanField(default=False)
     issue_id = AutoSlugField(populate_from='book', unique=True)
+
 
     class Meta:
         ordering = ["-issue_date"]
 
     def save(self, *args, **kwargs):
+        if not self.issue_date:
+            self.issue_date = date.today()
         if not self.return_date:
             self.return_date = date.today() + timedelta(days=7)
+
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Issue of {self.book.book_name} to {self.admission_no}."
+        return f"Issue of {self.book.book_name} to {self.issue_holder}."
 
 
 class OverDueBook(models.Model):
     issue = models.OneToOneField("IssueBook", on_delete=models.CASCADE)
-    over_due_id = AutoSlugField(populate_from='issue__issue_id', unique=True)
+    over_due_id = AutoSlugField(populate_from='issue', unique=True)
+    over_due_addition_day = models.DateField(null=True, blank=True)
+    overdue_issue_holder = models.ManyToManyField(Students, related_name='overdueissueholder')
+    fine_due = models.IntegerField(null=True, blank=True)
+    
+    
+    class Meta:
+        ordering = ['-issue']
+        
+        
+        # def save(self, *args, **kwargs):
+            
 
     def __str__(self):
-        return f"Issue of {self.issue.book.book_name} to {self.issue.admission_no} is overdue."
+        return f"Issue of {self.issue.book.book_name} to {self.overdue_issue_holder} is overdue."

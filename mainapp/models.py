@@ -5,33 +5,33 @@ from django.core.validators import MaxValueValidator
 from django.contrib.auth.models import User
 
 
-class Students(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+# class Students(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
     
-    admission_no = models.IntegerField()
+#     admission_no = models.IntegerField()
     
-    student_name = models.CharField(max_length=64)
-    student_mother_name = models.CharField(max_length=64)
-    student_father_name = models.CharField(max_length=64)
+#     student_name = models.CharField(max_length=64)
+#     student_mother_name = models.CharField(max_length=64)
+#     student_father_name = models.CharField(max_length=64)
     
-    student_image = models.ImageField()
-    student_father_image = models.ImageField()
-    student_mother_image = models.ImageField()
+#     student_image = models.ImageField()
+#     student_father_image = models.ImageField()
+#     student_mother_image = models.ImageField()
     
-    student_address = models.TextField(blank=True, null=True)
+#     student_address = models.TextField(blank=True, null=True)
     
-    student_grade = models.IntegerField()
-    student_section = models.CharField(max_length=1)
+    # student_grade = models.IntegerField()
+    # student_section = models.CharField(max_length=1)
     
-    student_phone_number_father = models.IntegerField()
-    student_phone_number_mother = models.IntegerField()
-    student_mode_of_transfer = models.CharField(max_length=8)
+#     student_phone_number_father = models.IntegerField()
+#     student_phone_number_mother = models.IntegerField()
+#     student_mode_of_transfer = models.CharField(max_length=8)
     
-    def __str__(self):
-        student = ", ".join(a.student_name for a in self.student_name.all())
-        class_of_student = ", ".join(p.publication_name for p in self.student_grade.all())
-        section_of_student = "".join(s.student_section for s in self.student_section.all())
-        return f"{student} of {class_of_student}{section_of_student}"    
+#     def __str__(self):
+#         student = ", ".join(a.student_name for a in self.student_name.all())
+#         class_of_student = ", ".join(p.publication_name for p in self.student_grade.all())
+#         section_of_student = "".join(s.student_section for s in self.student_section.all())
+#         return f"{student} of {class_of_student}{section_of_student}"    
     
 class Author(models.Model):
     author_name = models.CharField(max_length=256)
@@ -73,7 +73,13 @@ class Books(models.Model):
 
 class IssueBook(models.Model):
     book = models.ForeignKey(Books, on_delete=models.PROTECT)
-    issue_holder = models.ManyToManyField("Students", related_name='issuebook')
+    # issue_holder = models.ManyToManyField("Students", related_name='issuebook')
+    admission_no = models.IntegerField(default=0)
+    
+    
+    student_name = models.CharField(max_length=64, default='')
+    student_grade = models.IntegerField(default=0)
+    student_section = models.CharField(max_length=1, default='')
     returned = models.BooleanField(default=False)
     issue_date = models.DateField(null=True, blank=True)
     return_date = models.DateField(null=True, blank=True)
@@ -92,23 +98,24 @@ class IssueBook(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Issue of {self.book.book_name} to {self.issue_holder}."
+        return f"Issue of {self.book.book_name} to {self.student_name} of class {self.student_grade}{self.student_section}."
 
 
 class OverDueBook(models.Model):
     issue = models.OneToOneField("IssueBook", on_delete=models.CASCADE)
     over_due_id = AutoSlugField(populate_from='issue', unique=True)
-    over_due_addition_day = models.DateField(null=True, blank=True)
-    overdue_issue_holder = models.ManyToManyField(Students, related_name='overdueissueholder')
-    fine_due = models.IntegerField(null=True, blank=True)
+    # overdue_issue_holder = models.ManyToManyField(Students, related_name='overdueissueholder')
+    student_name = models.CharField(max_length=64, default='')
+    student_grade = models.IntegerField(default=0)
+    admission_no = models.IntegerField(default=0)  
     
+    student_section = models.CharField(max_length=1, default='')
     
     class Meta:
         ordering = ['-issue']
         
         
-        # def save(self, *args, **kwargs):
             
 
     def __str__(self):
-        return f"Issue of {self.issue.book.book_name} to {self.overdue_issue_holder} is overdue."
+        return f"Issue of {self.issue.book.book_name} to {self.student_name} of {self.student_grade}{self.student_section} is overdue."

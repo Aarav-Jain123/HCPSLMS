@@ -10,10 +10,12 @@ admin.site.index_title = "Welcome to Holy Child Public School Library Management
 admin.site.register(Books)
 admin.site.register(Author)
 admin.site.register(Publication)
-admin.site.register(IssueBook)
+# admin.site.register(IssueBook) this will follow default architecture
 admin.site.register(OverDueBook)
-admin.site.register(Students)
+# admin.site.register(Students)
 
+
+@admin.register(IssueBook) # this will make it more dynamic and help load the following class
 class IssueBookAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
@@ -22,16 +24,15 @@ class IssueBookAdmin(admin.ModelAdmin):
 
     def check_overdue(self):
         today = timezone.now().date()
-        issued_books = IssueBook.objects.filter(return_date=today, returned=False)
+        issued_books = IssueBook.objects.filter(return_date__lt=today, returned=False)
 
-        for book in issued_books:
-            OverdueBook.objects.get_or_create(
-                issue=book,
+        for issues in issued_books:
+            OverDueBook.objects.get_or_create(
+                issue=issues,
                 defaults={
-                    "issue": book.user,
-                    "book": book.book,
-                    "due_date": book.return_date,
+                    "student_name": issues.student_name,
+                    "student_grade": issues.student_grade,
+                    "student_section": issues.student_section,
+                    "admission_no": issues.admission_no,
                 }
             )
-
-# Fix from line 27

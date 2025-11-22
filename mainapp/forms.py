@@ -23,4 +23,4 @@ class PublicationForm(forms.ModelForm):
 class IssueForm(forms.ModelForm):
     class Meta:
         model = IssueBook
-        fields = ["book", "issue_holder"]
+        fields = ["book", "student_name", "student_grade", "student_section", "admission_no"]

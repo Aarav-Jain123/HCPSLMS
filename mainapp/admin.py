@@ -34,8 +34,8 @@ class IssueBookAdmin(admin.ModelAdmin):
                     "student_grade": issues.student_grade,
                     "student_section": issues.student_section,
                     "admission_no": issues.admission_no,
-                    "issue_date": issues.issue_date,
-                    "return_date": issues.return_date,
-                    "issue_id": issues.issue_id
+                    "date_issued": issues.issue_date,
+                    "date_supposed_to_be_returned": issues.return_date,
+                    "id_of_issue": issues.issue_id
                 }
             )

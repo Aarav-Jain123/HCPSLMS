@@ -7,17 +7,12 @@ admin.site.site_header = "HCPSLMS"
 admin.site.site_title = "Holy Child Public School Library Management Software"
 admin.site.index_title = "Welcome to Holy Child Public School Library Management Software"
 
-admin.site.register(Books)
-admin.site.register(Author)
-admin.site.register(Publication)
-# admin.site.register(IssueBook) this will follow default architecture
 admin.site.register(OverDueBook)
-# admin.site.register(Students)
 
 
 @admin.register(IssueBook) # this will make it more dynamic and help load the following class
 class IssueBookAdmin(admin.ModelAdmin):
-
+    raw_id_fields = ['book']
     def changelist_view(self, request, extra_context=None):
         self.check_overdue()
         return super().changelist_view(request, extra_context)
@@ -39,3 +34,23 @@ class IssueBookAdmin(admin.ModelAdmin):
                     "id_of_issue": issues.issue_id
                 }
             )
+        
+
+@admin.register(Books)
+class BooksAdmin(admin.ModelAdmin):
+    search_fields = [
+        'book_code',
+        'book_name',
+        'book_author__author_name',
+        'book_publication__publication_name'
+    ]
+
+
+@admin.register(Author)
+class AuthorAdmin(admin.ModelAdmin):
+    search_fields = ['author_name']
+
+
+@admin.register(Publication)
+class PublicationAdmin(admin.ModelAdmin):
+    search_fields = ['publication_name']

@@ -107,7 +107,10 @@ class OverDueBook(models.Model):
     # overdue_issue_holder = models.ManyToManyField(Students, related_name='overdueissueholder')
     student_name = models.CharField(max_length=64, default='')
     student_grade = models.IntegerField(default=0)
-    admission_no = models.IntegerField(default=0)  
+    admission_no = models.IntegerField(default=0)
+    date_issued = models.DateField(null=True)
+    date_supposed_to_be_returned = models.DateField(null=True)
+    id_of_issue = models.TextField(null=True)
     
     student_section = models.CharField(max_length=1, default='')
     

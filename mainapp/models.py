@@ -72,6 +72,7 @@ class Books(models.Model):
         authors = ", ".join(a.author_name for a in self.book_author.all())
         pubs = ", ".join(p.publication_name for p in self.book_publication.all())
         return f"{self.book_code} - {self.book_name} by {authors} under {pubs}"
+        
 
 
 class IssueBook(models.Model):

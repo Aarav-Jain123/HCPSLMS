@@ -45,6 +45,7 @@ class BooksAdmin(admin.ModelAdmin):
         'book_author__author_name',
         'book_publication__publication_name'
 ]
+    raw_id_fields = ['book_author', 'book_publication']
 
 
 @admin.register(Author)
@@ -60,6 +61,7 @@ class PublicationAdmin(admin.ModelAdmin):
 @admin.register(IssueMagazine) # this will make it more dynamic and help load the following class
 class IssueMagazineAdmin(admin.ModelAdmin):
     raw_id_fields = ['magazine']
+    search_fields = ['student_name', 'student_grade', 'admission_no']
     def changelist_view(self, request, extra_context=None):
         self.check_overdue()
         return super().changelist_view(request, extra_context)
@@ -90,6 +92,7 @@ class MagazinesAdmin(admin.ModelAdmin):
         'magazine_author__author_name',
         'magazine_publication__publication_name'
 ]
+    raw_id_fields = ['magazine_author', 'magazine_publication']
 
 
 @admin.register(Specimens)

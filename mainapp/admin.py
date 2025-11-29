@@ -5,7 +5,8 @@ from django.utils import timezone
 # Register your models here.
 admin.site.site_header = "HCPSLMS"
 admin.site.site_title = "Holy Child Public School Library Management Software"
-admin.site.index_title = "Welcome to Holy Child Public School Library Management Software"
+admin.site.index_title = "Welcome to Holy Child Public School Library Management Software - By Aarav Jain of class IX A 2025-26"
+
 
 admin.site.register(OverDueBook)
 admin.site.register(OverDueMagazine)

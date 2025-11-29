@@ -76,7 +76,7 @@ class Books(models.Model):
 
 
 class IssueBook(models.Model):
-    book = models.ForeignKey(Books, on_delete=models.PROTECT)
+    book = models.ForeignKey(Books, on_delete=models.PROTECT, unique=True)
     # issue_holder = models.ManyToManyField("Students", related_name='issuebook')
     admission_no = models.IntegerField(default=0)
     
@@ -149,7 +149,7 @@ class Magazines(models.Model):
 
 
 class IssueMagazine(models.Model):
-    magazine = models.ForeignKey(Magazines, on_delete=models.PROTECT)
+    magazine = models.ForeignKey(Magazines, on_delete=models.PROTECT, unique=True)
     admission_no = models.IntegerField(default=0)
     
     

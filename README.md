@@ -37,3 +37,6 @@ Build HCPSLMS from the source and install dependencies:
 
 ```bash
 git clone https://github.com/Aarav-Jain123/HCPSLMS
+cd HCPSLMS
+pip install -r requirements.txt
+python3 manage.py runserver

@@ -2,6 +2,8 @@ from django.db import models
 from datetime import date, timedelta
 from django.core.validators import MaxValueValidator
 from django.contrib.auth.models import User
+from django.core.validators import FileExtensionValidator
+import pandas as pd
 
 
 # class Students(models.Model):
@@ -206,3 +208,25 @@ class Specimens(models.Model):
 
     def __str__(self):
         return f"{self.specimen_code} - {self.specimen_name}"
+
+
+
+
+
+
+
+
+class ExcelFileUpload(models.Model):
+    file = models.FileField(
+            upload_to='uploads/',
+            validators=[FileExtensionValidator(allowed_extensions=['xlsx', 'csv'])]
+    )
+    
+    
+    def save(self, *args, **kwargs):
+        df=pd.read_excel(f'uploads/{self.file.name}')
+        df.columns=["Item_Type", "Category_Name", "Book_Title", "Author_Name", "Publisher_Name", "No_Of_Pages", "Language", "Issue_Of_Date", "Book_Cost", "Purchase_Date", "Admission_No"]
+        df.dropna()
+        print(df.dtypes)
+
+        super().save(*args, **kwargs)

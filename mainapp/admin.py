@@ -10,6 +10,7 @@ admin.site.index_title = "Welcome to Holy Child Public School Library Management
 
 admin.site.register(OverDueBook)
 admin.site.register(OverDueMagazine)
+admin.site.register(ExcelFileUpload)
 
 
 @admin.register(IssueBook) # this will make it more dynamic and help load the following class
@@ -99,4 +100,3 @@ class MagazinesAdmin(admin.ModelAdmin):
 @admin.register(Specimens)
 class SpecimensAdmin(admin.ModelAdmin):
     search_fields = ['specimen_code', 'specimen_name']
-

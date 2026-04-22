@@ -47,7 +47,6 @@ class BooksAdmin(admin.ModelAdmin):
         'book_author__author_name',
         'book_publication__publication_name'
 ]
-    raw_id_fields = ['book_author', 'book_publication']
 
 
 @admin.register(Author)
@@ -94,7 +93,6 @@ class MagazinesAdmin(admin.ModelAdmin):
         'magazine_author__author_name',
         'magazine_publication__publication_name'
 ]
-    raw_id_fields = ['magazine_author', 'magazine_publication']
 
 
 @admin.register(Specimens)

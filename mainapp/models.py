@@ -36,7 +36,6 @@ import pandas as pd
     
 class Author(models.Model):
     author_name = models.CharField(max_length=256)
-    author_link = models.CharField(max_length=1024, unique=True)
 
     class Meta:
         ordering = ["author_name"]
@@ -47,7 +46,6 @@ class Author(models.Model):
 
 class Publication(models.Model):
     publication_name = models.CharField(max_length=256, unique=True)
-    publication_link = models.CharField(max_length=1024)
 
     class Meta:
         ordering = ["publication_name"]
@@ -63,17 +61,26 @@ class Publication(models.Model):
 class Books(models.Model):
     book_code = models.CharField(max_length=256, unique=True)
     book_name = models.CharField(max_length=256)
-    book_author = models.ManyToManyField("Author", related_name='books')
-    book_link = models.CharField(max_length=1024)
-    book_publication = models.ManyToManyField("Publication", related_name='books')
+    book_author = models.CharField(max_length=256, default='N/A')
+    book_publication = models.CharField(max_length=256, default='N/A')
+    book_pages = models.CharField(max_length=256, default='N/A')
+    book_cost = models.CharField(max_length=256, default='N/A')
+    book_language = models.CharField(max_length=256, default='N/A')
+    book_edition_description = models.CharField(max_length=256, default='N/A')
+    book_isbn_no = models.CharField(max_length=256, default='N/A')
+    book_purchase_date = models.CharField(max_length=256, default='N/A')
+    book_purchase_ref_name = models.CharField(max_length=256, default='N/A')
+    book_bill_number = models.CharField(max_length=256, default='N/A')
+    book_place_of_publication = models.CharField(max_length=256, default='N/A')
+
 
     class Meta:
         ordering = ["book_name"]
 
     def __str__(self):
-        authors = ", ".join(a.author_name for a in self.book_author.all())
-        pubs = ", ".join(p.publication_name for p in self.book_publication.all())
-        return f"{self.book_code} - {self.book_name} by {authors} under {pubs}"
+        authors = ", " + self.book_author
+        publication = ", " + self.book_publication
+        return f"{self.book_code} - {self.book_name} by {authors} under {publication}"
         
 
 
@@ -137,17 +144,25 @@ class OverDueBook(models.Model):
 class Magazines(models.Model):
     magazine_code = models.CharField(max_length=256, unique=True)
     magazine_name = models.CharField(max_length=256)
-    magazine_author = models.ManyToManyField("Author", related_name='magazines')
-    magazine_link = models.CharField(max_length=1024)
-    magazine_publication = models.ManyToManyField("Publication", related_name='magazines')
+    magazine_author = models.CharField(max_length=256, default='N/A')
+    magazine_publication = models.CharField(max_length=256, default='N/A')
+    magazine_pages = models.CharField(max_length=256, default='0')
+    magazine_cost = models.CharField(max_length=256, default='0')
+    magazine_language = models.CharField(max_length=256, default='N/A')
+    magazine_edition_description = models.CharField(max_length=256, default='N/A')
+    magazine_isbn_no = models.CharField(max_length=256, default='N/A')
+    magazine_purchase_date = models.CharField(max_length=256, default='N/A')
+    magazine_purchase_ref_name = models.CharField(max_length=256, default='N/A')
+    magazine_bill_number = models.CharField(max_length=256, default='N/A')
+    magazine_place_of_publication = models.CharField(max_length=256, default='N/A')
 
     class Meta:
         ordering = ["magazine_name"]
 
     def __str__(self):
-        authors = ", ".join(a.author_name for a in self.magazine_author.all())
-        pubs = ", ".join(p.publication_name for p in self.magazine_publication.all())
-        return f"{self.magazine_code} - {self.magazine_name} by {authors} under {pubs}"
+        authors = ", " + self.magazine_author
+        publication = ", " + self.magazine_publication
+        return f"{self.magazine_code} - {self.magazine_name} by {authors} under {publication}"
 
 
 class IssueMagazine(models.Model):
@@ -224,9 +239,48 @@ class ExcelFileUpload(models.Model):
     
     
     def save(self, *args, **kwargs):
-        df=pd.read_excel(f'uploads/{self.file.name}')
-        df.columns=["Item_Type", "Category_Name", "Book_Title", "Author_Name", "Publisher_Name", "No_Of_Pages", "Language", "Issue_Of_Date", "Book_Cost", "Purchase_Date", "Admission_No"]
-        df.dropna()
-        print(df.dtypes)
-
         super().save(*args, **kwargs)
+        df=pd.read_excel(f'{self.file.name}')
+        df.columns=["Item_Type",	"Category_Name",	"Book_Title",	"ISBN_No",	"Author_Name",	"Publisher_Name",	"Edition_Description",	"No_of_Pages",	"Language",	"Issue_of_Date",	"Book_Cost",	"Issue_Flag",	"Purchase_Date",	"Purchase_Ref_Name",	"Accession_No",	"Book_Series_Type",	"Bill_Number",	"Place_of_Publication"]
+        for index, row in df.iterrows():
+            if row["Item_Type"] == "MAGAZINES":
+                try:
+                    magazines = Magazines.objects.get(magazine_code=row["Accession_No"])
+                except Magazines.DoesNotExist:
+                    magazines = Magazines(
+magazine_code = row["Accession_No"],
+magazine_name = row["Book_Title"],
+magazine_author = row["Author_Name"],
+magazine_publication = row["Publisher_Name"],
+magazine_pages = row["No_of_Pages"],
+magazine_cost = row["Book_Cost"],
+magazine_language = row["Language"],
+magazine_edition_description = row["Edition_Description"],
+magazine_isbn_no = row['ISBN_No'],
+magazine_purchase_date = row['Purchase_Date'],
+magazine_purchase_ref_name = row['Purchase_Ref_Name'],
+magazine_bill_number = row['Bill_Number'],
+magazine_place_of_publication = row["Place_of_Publication"],
+)
+                    magazines.save()
+        
+            else:
+                try:
+                    books = Books.objects.get(book_code=row["Accession_No"])
+                except Books.DoesNotExist:
+                    books = Books(
+book_code = row["Accession_No"],
+book_name = row["Book_Title"],
+book_author = row["Author_Name"],
+book_publication = row["Publisher_Name"],
+book_pages = row["No_of_Pages"],
+book_cost = row["Book_Cost"],
+book_language = row["Language"],
+book_edition_description = row["Edition_Description"],
+book_isbn_no = row['ISBN_No'],
+book_purchase_date = row['Purchase_Date'],
+book_purchase_ref_name = row['Purchase_Ref_Name'],
+book_bill_number = row['Bill_Number'],
+book_place_of_publication = row["Place_of_Publication"],
+)
+                    books.save()
